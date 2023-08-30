@@ -18,6 +18,7 @@ import fr.poseidonj.marketapp.models.CartLine;
 public class CartActivity extends AppCompatActivity {
     TableLayout cartLines;
     TextView total;
+    Cart cart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class CartActivity extends AppCompatActivity {
         cartLines = findViewById(R.id.cartLines);
         total = findViewById(R.id.total);
 
-        Cart cart;
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             cart = getIntent().getSerializableExtra("data", Cart.class);
         } else {
@@ -35,11 +36,9 @@ public class CartActivity extends AppCompatActivity {
         }
         addLine(null, -1);
         assert cart != null;
-        cart.getCartLines().forEach(cartLine -> {
-            addLine(cartLine, cart.getCartLines().indexOf(cartLine));
-        });
+        display();
 
-        total.setText("Total: " + cart.getTotalPrice());
+
 
 
     }
@@ -58,6 +57,7 @@ public class CartActivity extends AppCompatActivity {
             qte.setText("QTE");
             row.addView(qte);
         } else {
+            assert cartLine != null;
             qte.setText(String.valueOf(cartLine.getQuantity()));
 
             LinearLayout layout = new LinearLayout(this);
@@ -67,7 +67,13 @@ public class CartActivity extends AppCompatActivity {
             btnLess.setText("-");
 
             btnLess.setOnClickListener(v -> {
-
+                if (cartLine.getQuantity() > 1) {
+                    cartLine.setQuantity(cartLine.getQuantity() - 1);
+                } else {
+                    cart.getCartLines().remove(cartLine);
+                }
+                cartLines.removeAllViews();
+                display();
             });
 
             Button btnMore = new Button(this);
@@ -85,6 +91,23 @@ public class CartActivity extends AppCompatActivity {
             row.addView(layout);
         }
 
+        addColumn(row, line, "UnitPrice", String.valueOf((cartLine != null) ? cartLine.getProduct().getPrice() : ""), new TextView(this));
+
+        TextView actions = new TextView(this);
+
+        if (line == -1) {
+            actions.setText("Action");
+            row.addView(actions);
+        } else {
+            Button btnDel = new Button(this);
+            btnDel.setText("Delete");
+            btnDel.setOnClickListener(v -> {
+                cart.getCartLines().remove(cartLine);
+                cartLines.removeAllViews();
+                display();
+            });
+            row.addView(btnDel);
+        }
         cartLines.addView(row);
 
     }
@@ -96,5 +119,12 @@ public class CartActivity extends AppCompatActivity {
             textView.setText(orAdd);
 
         row.addView(textView);
+    }
+
+    private void display() {
+        total.setText("Total: " + cart.getTotalPrice());
+        cart.getCartLines().forEach(cartLine -> {
+            addLine(cartLine, cart.getCartLines().indexOf(cartLine));
+        });
     }
 }
