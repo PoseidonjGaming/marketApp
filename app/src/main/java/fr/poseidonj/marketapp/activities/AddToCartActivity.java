@@ -20,6 +20,7 @@ import fr.poseidonj.marketapp.R;
 import fr.poseidonj.marketapp.models.Cart;
 import fr.poseidonj.marketapp.models.CartLine;
 import fr.poseidonj.marketapp.models.Product;
+import fr.poseidonj.marketapp.utils.Utils;
 
 public class AddToCartActivity extends AppCompatActivity {
 
@@ -74,12 +75,16 @@ public class AddToCartActivity extends AppCompatActivity {
 
     public void btnAddClick(View view) {
 
-        Product currentProduct=products.get(intCurrentProduct);
-        int qte=Integer.parseInt(inputQTE.getText().toString());
-        cart.getCartLines().add(new CartLine(1,currentProduct, qte));
-        btnSeeCart.setText("Voir le panier ("+cart.getCartLines().size()+")");
+        Product currentProduct = products.get(intCurrentProduct);
+        int qte = Integer.parseInt(inputQTE.getText().toString());
+        if(!cart.getProducts().contains(currentProduct)){
+            cart.getCartLines().add(new CartLine(cart.getCartLines().size() + 1, currentProduct, qte));
+            btnSeeCart.setText("Voir le panier (" + cart.getCartLines().size() + ")");
+        }
+
     }
 
     public void btnSeeCartClick(View view) {
+        startActivity(Utils.startIntentWithBundle(this, CartActivity.class, cart));
     }
 }
