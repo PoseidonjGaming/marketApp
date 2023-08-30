@@ -22,7 +22,10 @@ public class Cart extends BaseEntity{
         return cartLines.stream().map(CartLine::getProduct).collect(Collectors.toList());
     }
 
-    public double getTotal(){
+    public double getTotalPrice(){
         return cartLines.stream().mapToDouble(value -> value.getProduct().getPrice()* value.getQuantity()).sum();
+    }
+    public double getTotalQte(){
+        return cartLines.stream().mapToInt(CartLine::getQuantity).sum();
     }
 }

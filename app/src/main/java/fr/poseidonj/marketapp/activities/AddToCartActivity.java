@@ -79,7 +79,7 @@ public class AddToCartActivity extends AppCompatActivity {
         int qte = Integer.parseInt(inputQTE.getText().toString());
         if(!cart.getProducts().contains(currentProduct)){
             cart.getCartLines().add(new CartLine(cart.getCartLines().size() + 1, currentProduct, qte));
-            btnSeeCart.setText("Voir le panier (" + cart.getCartLines().size() + ")");
+            btnSeeCart.setText("Voir le panier (" + cart.getTotalQte() + ")");
         }
 
     }
